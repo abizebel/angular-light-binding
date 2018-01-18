@@ -3,15 +3,9 @@
  * @ Author : Abbas Hosseini
  * @ Description : A simple library that support two way binding with angular syntax
  * @ Version : 1.0.0
- * @ Last watch : 2018 05 January
+ * @ Last update : Friday - 2018 19 January
  ******************************************************************************************/
 
-/**
- * @ param {String} ctrlName is controller name
- * @ param {function ($scope)} ctrlFn is a callback
- * @ returns {nothing}
- * @ description : A function for set controller
- */
 //IFFE
 var angular = (function () {
     /** 
@@ -34,8 +28,8 @@ var angular = (function () {
         }
     }
     /** 
-     * @ param {String} moduleName module name
-     * @ returns {Object} return controller function
+     * @ param {String} moduleName is name that defined by user like ng-app="test"
+     * @ returns {Object} a object that have controller function
      * @ description : create module for application
      */
     function module(moduleName) {
@@ -67,7 +61,7 @@ var angular = (function () {
         /** 
          * @ param {Nothing}
          * @ returns {Nothing} 
-         * @ description : initilize controller module for watchList
+         * @ description : initilize controller dom for watchList
          */
         init: function () {
             var self = this;
@@ -100,10 +94,10 @@ var angular = (function () {
             };
         },
         /** 
-         * @ param {Object} node is a module element
+         * @ param {Object} node is a dom element
          * @ param {Function} func is a callback that have node as argument 
          * @ returns {Nothing}
-         * @ description : traversing module nodes
+         * @ description : traversing dom nodes
          */
         traveseDom: function (node, func) {
             //pass attr node as callback arg
@@ -115,9 +109,9 @@ var angular = (function () {
             }
         },
         /** 
-         * @ param {String} node is a module element
+         * @ param {String} node is a dom element
          * @ returns {Nothing}
-         * @ description : decide how to bind module node
+         * @ description : decide how to bind dom node
          */
         compile: function (node) {
             //text node dont have outerHTML
@@ -199,7 +193,7 @@ var angular = (function () {
             }
         },
         /** 
-         * @ param {Object} node is a module object
+         * @ param {Object} node is a dom object
          * @ param {String} points is interpolations indexs list
          * @ returns {Nothing}
          * @ description : binding interpolation placeholders
@@ -223,7 +217,7 @@ var angular = (function () {
             }
         },
         /** 
-         * @ param {Object} node is a module object
+         * @ param {Object} node is a dom object
          * @ returns {Nothing}
          * @ description : binding inputs to binding model for
          * @ making two way data binding beetween ui and model
