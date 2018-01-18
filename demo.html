@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Angular Light</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="angular.light.js"></script>
+</head>
+
+
+<body class="container">
+
+    <div ng-app="demoApp1">
+
+        <div ng-controller="formController" class="row">
+            <h2>demoApp1 -> formController</h2>
+            <form class="form-inline" action="/action_page.php">
+                <div class="form-group">
+                    <label for="email">Email:</label> {{email}} <br>
+                    <input type="email" class="form-control" placeholder="email" ng-model="email">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Password:</label> {{password}}<br>
+                    <input type="password" class="form-control" placeholder="password" ng-model="password">
+                </div><br><br>
+                <button type="button" class="btn btn-default" id="resetBtn">Reset Email</button>
+            </form>
+        </div>
+        <hr >
+        <div ng-controller="editController" class="row">
+            <h2>demoApp1 -> editController</h2>
+            <div class="form-group">
+                <input type="number" class="form-control" placeholder="width" ng-model="width">
+            </div>
+            <div class="form-group">              
+               <input type="number" class="form-control" placeholder="width" ng-model="height">
+            </div>
+            <div style="width:{{width}}px;height:{{height}}px;background:red"></div>
+        </div>
+        <hr >
+        
+    </div>
+
+    <div ng-app="demoApp2">
+        <div ng-controller="rangeController">
+            <h2>demoApp2 -> rangeController</h2>
+            <div class="form-group">              
+                <input type="number" class="form-control" placeholder="range" ng-model="range">
+            </div>
+            <div class="form-group">              
+                <input type="range" class="form-control" placeholder="range" ng-model="range">
+            </div>
+            <progress value="{{range}}" max="100"></progress>
+        </div>
+    </div>
+
+    <script>
+        var demoApp1 = angular.module('demoApp1');
+        demoApp1.controller('formController',formController);
+        demoApp1.controller('editController',editController);
+
+        function formController($scope) {
+            $scope.email ="developer@gmail.com";
+            $scope.password = '123456';
+            var resetBtn = document.getElementById('resetBtn');
+            resetBtn.onclick = function () {
+                $scope.email = "default@gmail.com";
+            }     
+        }
+        function editController ($scope) {
+            $scope.width =50;
+            $scope.height = 50;
+        }
+
+
+        var demoApp2 = angular.module('demoApp2');
+        demoApp2.controller('rangeController',rangeController);
+
+        function rangeController ($scope) {
+            $scope.range=30;
+        }
+    </script>
+</body>
+
+</html>
