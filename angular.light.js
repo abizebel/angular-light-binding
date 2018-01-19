@@ -9,11 +9,11 @@
 //IFFE
 var angular = (function () {
     /** 
-     * @ {scope} is calss for $scope objecgt
+     * @ {scope} is calss for $scope object
      */
     function scope() {}
     /** 
-     * @ param {Obvject} moduleDom is dom object of ng-app
+     * @ param {Object} moduleDom is dom object of <div ng-app="">
      * @ param {String} name of controller that user defined
      * @ returns {Object} module object of controller element
      * @ description : search and find current controller
@@ -86,7 +86,7 @@ var angular = (function () {
          * @ param {Object}
          * @ param {Object}
          * @ returns {Nothing}
-         * @ description : copy on object propeties into other obejct
+         * @ description : copy object propeties into other obejct
          */
         copyObject: function (source, des) {
             for (prop in source) {
@@ -245,7 +245,7 @@ var angular = (function () {
             });
         },
         /** 
-         * @ param {Object} bind is bind object
+         * @ param {Object} bind is {inputNodes:[], attrNodes:[],textNodes:[], value:'' }
          * @ param {Object} key is binding property
          * @ returns {Nothing} 
          * @ description : update changes on model or inputes
