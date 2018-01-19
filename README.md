@@ -4,7 +4,7 @@ A simple library that support two way binding with angular syntax
 <h3>Supports :</h3>
 <ul>
   <li>attribute binding</li>  
-  <pre><div style="width:{{width}}px"</pre>
+  <xmp><div style="width:{{width}}px"</xmp>
   <li>text binding</li>  
 
   
