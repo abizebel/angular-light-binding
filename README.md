@@ -16,7 +16,7 @@ A simple library that support two way binding with angular syntax
   <li>input binding</li>
   
     <pre>
-    &lt;input ng-model="width"&gt
+    <input ng-model="width">
     </pre>
 </ul>
 
