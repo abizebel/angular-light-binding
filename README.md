@@ -11,9 +11,10 @@ A simple library that support two way binding with angular syntax
   <li>text binding</li>  
   <pre>
   &lt;<span class="pl-ent">div</span>&gt<span class="pl-v">{{width}}</span>&lt;<span class="pl-ent">/div</span>&gt
-  </pre>
-
-    <li>input binding</li> 
+  </pre> 
+  
+  <li>input binding</li>
+  
     <pre>
     &lt;<span class="pl-ent">input ng-model="<span class="pl-v">width</span>"</span>&gt
     </pre>
