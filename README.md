@@ -19,3 +19,13 @@ A simple library that support two way binding with angular syntax
   </pre>
 </ul>
 
+<h3>Not Supports :</h3>
+
+<ul>
+  <li>binding literal objects (reactivity nested objects)</li> 
+  <pre>
+    {{user.admin.name}}
+  </pre>
+
+
+</ul>
