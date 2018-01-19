@@ -4,9 +4,10 @@ A simple library that support two way binding with angular syntax
 <h3>Supports :</h3>
 <ul>
   <li>attribute binding</li> 
-  <pre>
-&lt;<span class="pl-ent">div style="width:<span class="pl-v">{{width}}</span>px"</span>&gt;
+<pre>
+&lt;&lt;span class="pl-ent"&gtdiv style="width:&lt;span class="pl-v"&gt{{width}}&lt;/span&gtpx"&lt;/span&gt&gt;
 </pre>
+/pre>
 
   <li>text binding</li>  
 
