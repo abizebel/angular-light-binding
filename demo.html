@@ -8,47 +8,55 @@
     <script src="angular.light.js"></script>
 </head>
 
-
 <body class="container">
-
     <div ng-app="demoApp1">
 
         <div ng-controller="formController" class="row">
             <h2>demoApp1 -> formController</h2>
             <form class="form-inline" action="/action_page.php">
                 <div class="form-group">
-                    <label for="email">Email:</label> {{email}} <br>
-                    <input type="email" class="form-control" placeholder="email" ng-model="email">
+                    <label for="text">Email:</label> {{portal.login.user}}
+                    <br>
+                    <input type="text" class="form-control" placeholder="email" ng-model="portal.login.user">
                 </div>
                 <div class="form-group">
-                    <label for="pwd">Password:</label> {{password}}<br>
-                    <input type="password" class="form-control" placeholder="password" ng-model="password">
-                </div><br><br>
+                    <label for="text">Email:</label> {{portal.login.password}}
+                    <br>
+                    <input type="text" class="form-control" placeholder="email" ng-model="portal.login.password">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label> {{portal.email}}
+                    <br>
+                    <input type="email" class="form-control" placeholder="email" ng-model="portal.email">
+                </div>
+                <br>
+                <br>
                 <button type="button" class="btn btn-default" id="resetBtn">Reset Email</button>
             </form>
         </div>
-        <hr >
+        <hr>
+
         <div ng-controller="editController" class="row">
             <h2>demoApp1 -> editController</h2>
             <div class="form-group">
                 <input type="number" class="form-control" placeholder="width" ng-model="width">
             </div>
-            <div class="form-group">              
-               <input type="number" class="form-control" placeholder="width" ng-model="height">
+            <div class="form-group">
+                <input type="number" class="form-control" placeholder="width" ng-model="height">
             </div>
             <div style="width:{{width}}px;height:{{height}}px;background:red"></div>
         </div>
-        <hr >
-        
+        <hr>
+
     </div>
 
     <div ng-app="demoApp2">
         <div ng-controller="rangeController">
             <h2>demoApp2 -> rangeController</h2>
-            <div class="form-group">              
+            <div class="form-group">
                 <input type="number" class="form-control" placeholder="range" ng-model="range">
             </div>
-            <div class="form-group">              
+            <div class="form-group">
                 <input type="range" class="form-control" placeholder="range" ng-model="range">
             </div>
             <progress value="{{range}}" max="100"></progress>
@@ -57,28 +65,35 @@
 
     <script>
         var demoApp1 = angular.module('demoApp1');
-        demoApp1.controller('formController',formController);
-        demoApp1.controller('editController',editController);
+        demoApp1.controller('formController', formController);
+        demoApp1.controller('editController', editController);
 
         function formController($scope) {
-            $scope.email ="developer@gmail.com";
-            $scope.password = '123456';
+            $scope.portal = {
+                login: {
+                    user: 'admin',
+                    password: '123456',
+                    id: '123',
+                },
+                email: 'info@google.com',
+            }
             var resetBtn = document.getElementById('resetBtn');
             resetBtn.onclick = function () {
-                $scope.email = "default@gmail.com";
-            }     
+                $scope.portal.email = "default@gmail.com";
+            }
         }
-        function editController ($scope) {
-            $scope.width =50;
+
+        function editController($scope) {
+            $scope.width = 50;
             $scope.height = 50;
         }
 
 
         var demoApp2 = angular.module('demoApp2');
-        demoApp2.controller('rangeController',rangeController);
+        demoApp2.controller('rangeController', rangeController);
 
-        function rangeController ($scope) {
-            $scope.range=30;
+        function rangeController($scope) {
+            $scope.range = 30;
         }
     </script>
 </body>
