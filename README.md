@@ -19,15 +19,12 @@ A simple library that support two way binding with angular syntax
   <pre>
   &lt;input ng-model="width"&gt
   </pre>
-</ul>
-
-<h3>Not Supports :</h3>
-<ul>
   <li>binding literal objects (reactivity nested objects)</li> 
   <pre>
     {{user.admin.name}}
   </pre>
 </ul>
+
 
 
 ![alt text](http://s8.picofile.com/file/8317139242/Untitled.gif)
