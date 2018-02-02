@@ -1,5 +1,5 @@
 /*******************************************************************************************
- * @ Name : Angular Light 
+ * @ Name : Angular Light binding
  * @ Author : Abbas Hosseini
  * @ Description : A simple library that support two way binding with angular syntax
  * @ Version : 1.0.0
