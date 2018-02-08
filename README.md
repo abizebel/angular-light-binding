@@ -2,6 +2,10 @@
 A simple library that support two way binding with angular syntax
 ![alt text](http://s9.picofile.com/file/8317089618/two_way_data_binding_diagram.png)
 
+http://htmlpreview.github.io/?https://github.com/abizebel/angular-light-binding/blob/master/demo.html
+
+
+[=== ONLINE DEMO ===](http://htmlpreview.github.io/?https://github.com/abizebel/angular-light-binding/blob/master/demo.html)
 
 
 <h3>Supports :</h3>
