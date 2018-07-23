@@ -2,84 +2,178 @@
  * @ Name : Angular Light binding
  * @ Author : Abbas Hosseini
  * @ Description : A simple library that support two way binding with angular syntax
- * @ Version : 1.0.0
+ * @ Version : 2.0.0
  * @ Last update : Saturday - 2018 27 January
  ******************************************************************************************/
 
-//IFFE
+
+/**
+ * @class Observer pattern
+ * @description A way to otify changes to number of objects
+ */
+class Observer {
+    constructor() {
+        this.observers = [];
+    }
+    /**
+     * Subscribe observer in observerList
+     * 
+     * @param {Object} obs is a observer object
+     */
+    subscribe(obs) {
+        this.observers.push(obs)
+    }
+    /**
+     * Notify a change to all subsribes objects
+     * 
+     * @param {Function} action is a change that notify to other objects
+     */
+    notify(action) {
+        this.observers.forEach(obs => action.call(this, obs))
+    }
+}
+
+
+
+
+
+
+
 var angular = (function () {
-    /** 
-     * @ {scope} is unique object for any controller
+
+    /**
+     * Controller scope class
+     * 
+     * @class {Scope}
+     * @description binding part between the H(view) and (controller)
      */
-    function scope() { }
-    /** 
-     * @ param {Object} moduleDom is dom object of <div ng-app="">
-     * @ param {String} name of controller that user defined <div ng-controller="defaultController">
-     * @ returns {Object} dom object of controller element
-     * @ description : find current controller dom object
+    class Scope {
+        constructor() {}
+    }
+
+    /**
+     * Angular controller
+     * 
+     * @class {Module}
      */
-    function getController(moduleDom, ctrlName) {
-        var ctrls = moduleDom[0].querySelectorAll('[ng-controller]');
-        for (var i = 0; i < ctrls.length; i++) {
-            if (ctrls[i].getAttribute('ng-controller') == ctrlName) {
-                return ctrls[i];
-                break;
-            }
+    class Module {
+        constructor(moduleName) {
+            this.$rootScope = {
+                name : '$rootScope',
+                childs : {}
+        };
+            this.dom = document.querySelectorAll('[ng-app=' + moduleName + ']');
         }
     }
-    /** 
-     * @ param {String} moduleName is the name defined by user like ng-app="myApp"
-     * @ returns {Object} a object with controller function
-     * @ description : create module for application
+
+    /**
+     * Angular module
+     * 
+     * @class {Controller}
      */
-    function module(moduleName) {
-        var moduleDom = document.querySelectorAll('[ng-app=' + moduleName + ']');
-        return {
-            controller: function controller(ctrlName, ctrlFn) {
-                var crtlDom = getController(moduleDom, ctrlName);
-                new model(crtlDom, ctrlFn);
-            }
+    class Controller {
+        constructor(module) {
+            this.$scope = new Scope(); 
+            this.module = module;
         }
-    }
-    /** 
-     * @ {model} is binding class name
-     * @ param {Object} crtlDom is controller dom object
-     * @ param {Function} ctrlFn is a callback defined in controller that get $scopeas parameter   
-     * @ returns {Nothing}
-     */
-    function model(crtlDom, ctrlFn) {
-        //create scope for this controller
-        var $scope = new scope();
-        //run controller callback
-        ctrlFn($scope);
-        var self = this;
-        this.$scope = {};
-        //copy scope from cntroller to binding model
-        self.copyObject($scope, self.$scope);
-        //traversing controller scope and define reactivity for nested object
-        self.traverseObject($scope)
-        this.watchList = {};
-        this.controller = crtlDom;
-        this.init();
-    }
-    model.prototype = {
-        /** 
-         * @ param {Nothing}
-         * @ returns {Nothing} 
-         * @ description : initilize controller dom for collect watchers
+
+        getDom(ctrlName, ctrlFn) {
+            this.name = ctrlName;
+            this.module.$rootScope.childs[ctrlName] = this.$scope;
+            this.dom = this.getController(this.module.dom, ctrlName);
+            return this.dom
+        }
+
+        /**
+         * Get module controllers
+         * 
+         * @param {String} ctrlName
+         * @param {Object} moduleDom is dom object
+         * @description Find target controller based on controller name
          */
-        init: function () {
+        getController(moduleDom, ctrlName) {
+
+            //Sample : <div ng-app="" ng-controller=""></div>
+            if (moduleDom[0].getAttribute('ng-controller') == ctrlName) {
+                return moduleDom[0]
+            }
+
+            var ctrls = moduleDom[0].querySelectorAll('[ng-controller]');
+            for (var i = 0; i < ctrls.length; i++) {
+                if (ctrls[i].getAttribute('ng-controller') == ctrlName) {
+                    return ctrls[i];
+                    break;
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Angular class
+     * 
+     * @class {Angular}
+     */
+    class Angular {
+
+        /**
+         * Define angular module
+         * 
+         * @param {String} moduleName
+         */
+        module(moduleName) {
             var self = this;
-            self.traveseDom(self.controller, function (node) {
+            var module = new Module(moduleName);
+
+            return {
+                controller: function (ctrlName, ctrlFn) {
+                    var ctrl = new Controller(module)
+                    var crtlDom = ctrl.getDom(ctrlName, ctrlFn);
+                    var ctrlScope = ctrl.$scope;
+                    var moduleScope = module.$rootScope;
+
+                    //Twoway data binding
+                    var binding = new TwowayBind();
+                    binding.initialize(crtlDom, ctrlFn, ctrlScope, moduleScope)
+                }
+            }
+        }
+    }
+
+    /**
+     * Twoway data binding module
+     * 
+     * @class {TwowayBind}
+     */
+    class TwowayBind {
+
+        /**
+         * Initial a angular controller with a unique scope
+         */
+        initialize(crtlDom, ctrlFn, ctrlScope, moduleScope) {
+            var self = this;
+            //Pass scope to controller callback
+            ctrlFn.call(window, ctrlScope, moduleScope);
+            //Use observer pattern
+            this.observer = new Observer();
+            this.watchList = {};
+            //Define reactivity for biding model to ui
+            self.traverseObject(ctrlScope)
+
+            this.$scope = JSON.parse(JSON.stringify(ctrlScope));
+            self.traveseDom(crtlDom, function (node) {
                 self.compile(node);
             });
-        },
+        }
+
         /** 
-         * @ param {String} str is somthing like 'portal.user.name'
-         * @ returns {String} 'portal.user.name' => portal.user'
-         * @ description : a function for backward object literal string
+         * Backward literal
+         * 
+         * @param {String} str Is somthing like 'portal.user.name'
+         * @returns {String} 'portal.user.name' => portal.user'
+         * @description  A function for backward object literal string
          */
-        backward: function (str) { 
+        backward(str) {
             var arr = str.split('.');
             //fix strings that have '.' in end => 'portal.user.'
             if (arr[arr.length - 1] == '') {
@@ -87,39 +181,40 @@ var angular = (function () {
             }
             arr.pop();
             return arr.join('.') + '.';
-        },
+        }
+
         /** 
-         * @ param {Object} literal object for traversing
-         * @ param {String} setProp is string like 'portal.user.name'
-         * @ returns {Nothing} 
-         * @ description : traversing object properties 
+         * Traversing object properties 
+         * 
+         * @param {Object} obj is literal object for traversing
+         * @param {String} setProp is string like 'portal.user.name'
          */
-        traverseObject: function (obj, setProp) {
+        traverseObject(obj, setProp) {
             self = this;
             var setProp = setProp || '';
-            for (prop in obj) {
+            for (let prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
                     setProp += prop;
-                    //define reactivity
+                    //Define reactivity
                     self.defineReactive(obj, prop, obj[prop], setProp)
                     if (typeof obj[prop] == "object") {
                         setProp = setProp + '.'
                         self.traverseObject(obj[prop], setProp);
                     }
                 };
-                //remove last prop after any iteration in loop
+                //Remove last prop after any iteration in loop
                 setProp = self.backward(setProp)
             }
-        },
+        }
+
         /** 
-         * @ param {Object} obj is scope coming from controller
-         * @ param {Object} prop target to define reactivity
-         * @ param {Any} val is value for define for getter
-         * @ param {String} setProp is property literal 'portal.user.name'
-         * @ returns {Nothing}
-         * @ description : define reactivity for properties coming from controller
+         * @param {Object} obj is scope coming from controller
+         * @param {Object} prop is target to define reactivity
+         * @param {Any} val is value for define for getter
+         * @param {String} setProp is property literal 'portal.user.name'
+         * @description : Define reactivity for properties coming from controller
          */
-        defineReactive: function (obj, prop, val, setProp) {
+        defineReactive(obj, prop, val, setProp) {
             var self = this;
             Object.defineProperty(obj, prop, {
                 enumerable: true,
@@ -131,40 +226,29 @@ var angular = (function () {
                     self.set(setProp, newVal)
                 }
             });
-        },
+        }
+
         /** 
-         * @ param {Object} source 
-         * @ param {Object} des
-         * @ returns {Nothing}
-         * @ description : copy object propeties into other obejct
+         * Traversing dom nodes
+         * 
+         * @param {Object} node is a dom element
+         * @param {Function} func is a callback that have node as argument 
          */
-        copyObject: function (source, des) {
-            var immutable = JSON.parse(JSON.stringify(source));
-            for (prop in immutable) {
-                des[prop] = immutable[prop]
-            };
-        },
-        /** 
-         * @ param {Object} node is a dom element
-         * @ param {Function} func is a callback that have node as argument 
-         * @ returns {Nothing}
-         * @ description : traversing dom nodes
-         */
-        traveseDom: function (node, func) {
-            //pass attr node as callback arg
+        traveseDom(node, func) {
+            //Pass attr node as callback arg
             func(node);
             node = node.firstChild;
             while (node) {
                 this.traveseDom(node, func);
                 node = node.nextSibling;
             }
-        },
+        }
+
         /** 
-         * @ param {String} node is a dom element
-         * @ returns {Nothing}
-         * @ description : decide how to bind dom nodes
+         * @param {String} node is a dom element
+         * @description  Decide how to bind dom nodes 
          */
-        compile: function (node) {
+        compile(node) {
             //text node dont have outerHTML
             var nodeValue = node.outerHTML || node.nodeValue,
                 childs = {
@@ -201,13 +285,14 @@ var angular = (function () {
                     self.bindInput(node);
                 }
             }
-        },
+        }
+
         /** 
-         * @ param {String} string is innerHTML of parsing node
-         * @ returns {Object} object is {start:[] ,end:[] ,interpolate: false}
-         * @ description : parse placeholder of {{expressions}} for interpolation
+         * @param {String} string is innerHTML of parsing node
+         * @returns {Object} object is {start:[] ,end:[] ,interpolate: false}
+         * @description : Parse placeholder of {{expressions}} for interpolation
          */
-        parse: function (string) {
+        parse(string) {
             var reg = /{{[^}]*}}/gi,
                 points = {
                     start: [],
@@ -221,15 +306,16 @@ var angular = (function () {
                 points.hasInterpolate = true;
             }
             return points;
-        },
+        }
+
         /** 
-         * @ param {String} a sample for string '{{name}} {{family}}'
-         * @ returns {String} interpolated string 'abbas hosseini'
-         * @ description : interpolating string
+         * @param {String} a sample for string '{{name}} {{family}}'
+         * @returns {String} interpolated string 'abbas hosseini'
+         * @description : interpolating string
          * @ - string interpolation is a process in programming
          * @ - that replace values with placeholders
          */
-        interpolate: function (string) {
+        interpolate(string) {
             var self = this;
             var points = self.parse(string);
             if (points.hasInterpolate) {
@@ -242,19 +328,19 @@ var angular = (function () {
             } else {
                 return string
             }
-        },
+        }
+
         /** 
-         * @ param {Object} node is a dom object
-         * @ param {Any} nodeValue is value for current node
-         * @ param {Object} childs is childs = {textNodes: [], attrNodes: []}
-         * @ param {Object} points is interpolations indexs list
+         * @param {Object} node is a dom object
+         * @param {Any} nodeValue is value for current node
+         * @param {Object} childs is childs = {textNodes: [], attrNodes: []}
+         * @param {Object} points is interpolations indexs list
          * @ - points = {start: [], end: [], hasInterpolate: false}
-         * @ returns {Nothing}
-         * @ description : binding interpolation placeholders
+         * @description : binding interpolation placeholders
          */
-        bindText: function (node, nodeValue, childs, points) {
+        bindText(node, nodeValue, childs, points) {
             //Add properties to watchList object
-            for (var index in points.start) {
+            for (let index in points.start) {
                 var prop = nodeValue.substring(points.start[index] + 2, points.end[index] - 2).trim();
                 if (this.watchList[prop]) {
                     this.watchList[prop].textNodes = this.watchList[prop].textNodes.concat(childs.textNodes);
@@ -269,14 +355,15 @@ var angular = (function () {
                 }
                 this.watch(this.watchList[prop], prop);
             }
-        },
+        }
+
         /** 
-         * @ param {Object} node is a dom object
-         * @ returns {Nothing}
-         * @ description : binding inputs to binding model for
-         * @ making two way data binding beetween ui and model
+         * Making two way data binding beetween ui and model
+         * 
+         * @param {Object} node is a dom object
+         * @description : binding inputs to binding model for
          */
-        bindInput: function (node) {
+        bindInput(node) {
             var prop = node.getAttribute("ng-model"),
                 self = this;
             if (this.get(prop)) {
@@ -297,14 +384,14 @@ var angular = (function () {
             node.addEventListener("input", function (e) {
                 self.set(prop, e.target.value);
             });
-        },
+        }
+
         /** 
-         * @ param {Object} bind is {inputNodes:[], attrNodes:[],textNodes:[], value:'' }
-         * @ param {Object} key is binding property
-         * @ returns {Nothing} 
-         * @ description : update changes dom elements
+         * Update changes dom elements
+         * @param {Object} bind is {inputNodes:[], attrNodes:[],textNodes:[], value:'' }
+         * @param {Object} key is binding property
          */
-        watch: function (bind, key) {
+        watch(bind, key) {
             bind.value = this.get(key);
             var self = this;
             //watch text nodes
@@ -319,27 +406,30 @@ var angular = (function () {
             for (var j = 0; j < bind.inputNodes.length; j++) {
                 bind.inputNodes[j].value = bind.value;
             }
-        },
+        }
+
         /** 
-         * @ param {String} exp is property expression 'user.name'
-         * @ returns {Any} value of property
-         * @ description : get object property value
+         * Get object property value
+         * 
+         * @param {String} exp is property expression 'user.name'
+         * @returns {Any} value of property
          */
-        get: function (exp) {
+        get(exp) {
             var val = this.$scope;
             exp = exp.split('.');
             exp.forEach(function (k) {
                 val = val[k];
             });
             return val;
-        },
+        }
+
         /** 
-         * @ param {String} exp is property expression 'user.name'
-         * @ param {Any} value anything to assign to property
-         * @ returns {Nothing} 
-         * @ description : set property to object
+         * Set property to object
+         * 
+         * @param {String} exp is property expression 'user.name'
+         * @param {Any} value anything to assign to property
          */
-        set: function (exp, value) {
+        set(exp, value) {
             var val = this.$scope;
             var propStr = exp;
             exp = exp.split('.');
@@ -354,10 +444,14 @@ var angular = (function () {
             if (this.watchList[propStr]) {
                 this.watch(this.watchList[propStr], propStr)
             }
+        }
+    }
+
+    var angular = new Angular();
+    //Public Interface
+    return {
+        module: function (moduleName) {
+            return angular.module(moduleName)
         },
     }
-    //Public api -> angular.module()
-    return {
-        module: module,
-    }
-})(); //END IFFE
+})()
