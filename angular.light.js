@@ -6,39 +6,6 @@
  * @ Last update : Saturday - 2018 27 January
  ******************************************************************************************/
 
-
-/**
- * @class Observer pattern
- * @description A way to otify changes to number of objects
- */
-class Observer {
-    constructor() {
-        this.observers = [];
-    }
-    /**
-     * Subscribe observer in observerList
-     * 
-     * @param {Object} obs is a observer object
-     */
-    subscribe(obs) {
-        this.observers.push(obs)
-    }
-    /**
-     * Notify a change to all subsribes objects
-     * 
-     * @param {Function} action is a change that notify to other objects
-     */
-    notify(action) {
-        this.observers.forEach(obs => action.call(this, obs))
-    }
-}
-
-
-
-
-
-
-
 var angular = (function () {
 
     /**
@@ -154,9 +121,9 @@ var angular = (function () {
             var self = this;
             //Pass scope to controller callback
             ctrlFn.call(window, ctrlScope, moduleScope);
-            //Use observer pattern
-            this.observer = new Observer();
+
             this.watchList = {};
+
             //Define reactivity for biding model to ui
             self.traverseObject(ctrlScope)
 
@@ -353,7 +320,7 @@ var angular = (function () {
                         value: this.get(prop) || ''
                     };
                 }
-                this.watch(this.watchList[prop], prop);
+                this.broadcast(this.watchList[prop], prop);
             }
         }
 
@@ -391,18 +358,18 @@ var angular = (function () {
          * @param {Object} bind is {inputNodes:[], attrNodes:[],textNodes:[], value:'' }
          * @param {Object} key is binding property
          */
-        watch(bind, key) {
+        broadcast(bind, key) {
             bind.value = this.get(key);
             var self = this;
-            //watch text nodes
+            //broadcast text nodes
             for (var i = 0; i < bind.textNodes.length; i++) {
                 bind.textNodes[i].node.nodeValue = self.interpolate(bind.textNodes[i].value);
             }
-            //watch attrs
+            //broadcast attrs
             for (var i = 0; i < bind.attrNodes.length; i++) {
                 bind.attrNodes[i].node.nodeValue = self.interpolate(bind.attrNodes[i].value);
             }
-            //watch inputs
+            //broadcast inputs
             for (var j = 0; j < bind.inputNodes.length; j++) {
                 bind.inputNodes[j].value = bind.value;
             }
@@ -442,7 +409,7 @@ var angular = (function () {
             });
             // set function notify change to watcher
             if (this.watchList[propStr]) {
-                this.watch(this.watchList[propStr], propStr)
+                this.broadcast(this.watchList[propStr], propStr)
             }
         }
     }
