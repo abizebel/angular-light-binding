@@ -1,6 +1,6 @@
 # angular-light-binding
 A simple library that support two way binding with angular syntax
-![alt text](http://s9.picofile.com/file/8317089618/two_way_data_binding_diagram.png)
+![alt text](http://s9.picofile.com/file/8317089618/two_way_data_binding_diagram.jpg)
 
 [=== ONLINE DEMO ===](http://htmlpreview.github.io/?https://github.com/abizebel/angular-light-binding/blob/master/demo.html)
 
